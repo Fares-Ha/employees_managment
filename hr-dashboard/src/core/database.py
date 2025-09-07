@@ -11,6 +11,8 @@ def get_connection():
 def init_db():
     conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
+
+    # Create staff table
     c.execute("""
     CREATE TABLE IF NOT EXISTS staff (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -25,5 +27,18 @@ def init_db():
         salary REAL
     )
     """)
+
+    # Create settings table
+    c.execute("""
+    CREATE TABLE IF NOT EXISTS settings (
+        key TEXT PRIMARY KEY,
+        value TEXT
+    )
+    """)
+
+    # Insert default settings if they don't exist
+    c.execute("INSERT OR IGNORE INTO settings (key, value) VALUES (?, ?)", ('theme', 'dark'))
+    c.execute("INSERT OR IGNORE INTO settings (key, value) VALUES (?, ?)", ('logo_path', ''))
+
     conn.commit()
     conn.close()

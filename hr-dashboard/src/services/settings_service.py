@@ -1,23 +1,33 @@
 from core.database import get_connection
 
-def get_settings():
+def get_setting(key):
+    """
+    Retrieves a setting from the database.
+    """
     conn = get_connection()
     c = conn.cursor()
-    c.execute("SELECT * FROM settings WHERE id=1")
+    c.execute("SELECT value FROM settings WHERE key=?", (key,))
     row = c.fetchone()
     conn.close()
-    return row
+    return row['value'] if row else None
 
-def update_theme(theme_name):
+def set_setting(key, value):
+    """
+    Updates a setting in the database.
+    """
     conn = get_connection()
     c = conn.cursor()
-    c.execute("UPDATE settings SET theme=? WHERE id=1", (theme_name,))
+    c.execute("UPDATE settings SET value=? WHERE key=?", (value, key))
     conn.commit()
     conn.close()
 
-def update_logo(logo_path):
+def get_all_settings():
+    """
+    Retrieves all settings from the database as a dictionary.
+    """
     conn = get_connection()
     c = conn.cursor()
-    c.execute("UPDATE settings SET logo_path=? WHERE id=1", (logo_path,))
-    conn.commit()
+    c.execute("SELECT key, value FROM settings")
+    rows = c.fetchall()
     conn.close()
+    return {row['key']: row['value'] for row in rows}

@@ -4,7 +4,11 @@ from PyQt6.QtCore import QDate
 class EmployeeDialog(QDialog):
     def __init__(self, parent=None, data=None, save_callback=None):
         super().__init__(parent)
-        self.setWindowTitle("Add / Edit Employee")
+
+        self.is_edit_mode = data is not None
+
+        title = "Edit Employee" if self.is_edit_mode else "Add Employee"
+        self.setWindowTitle(title)
         self.resize(400, 400)
 
         self.save_callback = save_callback
@@ -48,11 +52,12 @@ class EmployeeDialog(QDialog):
         form.addRow("Emirates ID Back", self.btn_eid_back)
         form.addRow("Passport Image", self.btn_passport)
 
-        self.save_btn = QPushButton("Add Employee")
+        button_text = "Save Changes" if self.is_edit_mode else "Add Employee"
+        self.save_btn = QPushButton(button_text)
         self.save_btn.clicked.connect(self.save_employee)
         layout.addWidget(self.save_btn)
 
-        if data:
+        if self.is_edit_mode:
             self.first_name.setText(data.get("first_name",""))
             self.last_name.setText(data.get("last_name",""))
             self.dob.setDate(QDate.fromString(data.get("dob","2000-01-01"), "yyyy-MM-dd"))
@@ -62,6 +67,12 @@ class EmployeeDialog(QDialog):
             self.emirates_id_front_path = data.get("emirates_id_front","")
             self.emirates_id_back_path = data.get("emirates_id_back","")
             self.passport_img_path = data.get("passport_img","")
+
+            # Update button text to show current file name if it exists
+            if self.emirates_id_front_path: self.btn_eid_front.setText(self.emirates_id_front_path.split("/")[-1])
+            if self.emirates_id_back_path: self.btn_eid_back.setText(self.emirates_id_back_path.split("/")[-1])
+            if self.passport_img_path: self.btn_passport.setText(self.passport_img_path.split("/")[-1])
+
 
     def select_file(self, field):
         path, _ = QFileDialog.getOpenFileName(self, "Select Image", "", "Images (*.png *.jpg *.jpeg)")

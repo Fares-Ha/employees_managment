@@ -1,5 +1,5 @@
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QPushButton, QLabel, QSizePolicy
-from PyQt6.QtGui import QIcon, QColor, QPalette
+from PyQt6.QtGui import QIcon
 from PyQt6.QtCore import Qt
 
 class Sidebar(QWidget):
@@ -34,18 +34,12 @@ class Sidebar(QWidget):
         self.layout.setSpacing(0)
         self.setLayout(self.layout)
 
-        # Add logo at top
-        logo = QLabel("HR Dashboard")
-        logo.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        logo.setStyleSheet("color: #ecf0f1; font-size: 18px; font-weight: bold;")
-        self.layout.addWidget(logo)
-
         self.buttons = {}
-        for page_name, icon_path in self.pages.items():
+        for page_name, icon in self.pages.items():
             btn = QPushButton(f"  {page_name}")
             btn.setCheckable(True)
-            if icon_path:
-                btn.setIcon(QIcon(icon_path))
+            if icon:
+                btn.setIcon(icon)
             btn.clicked.connect(lambda checked, name=page_name: self.set_active(name))
             self.layout.addWidget(btn)
             self.buttons[page_name] = btn
