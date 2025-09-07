@@ -1,7 +1,7 @@
 import unittest
 import sqlite3
 from unittest.mock import patch
-from services.staff_service import add_staff, get_all_staff, update_staff
+from services.staff_service import add_staff, get_all_staff, update_staff, delete_staff
 
 class TestStaffService(unittest.TestCase):
 
@@ -76,3 +76,29 @@ class TestStaffService(unittest.TestCase):
 
         updated_staff_list = get_all_staff()
         self.assertEqual(updated_staff_list[0]["salary"], 80000.0)
+
+    @patch('services.staff_service.get_connection')
+    def test_delete_staff(self, mock_get_connection):
+        """Test that a staff member can be deleted from the database."""
+        mock_get_connection.side_effect = self.get_new_connection
+
+        # Add a staff member first
+        staff_data = {
+            "first_name": "Peter", "last_name": "Jones", "dob": "1985-05-05",
+            "emirates_id": "11223", "passport_number": "C112233",
+            "emirates_id_front": b"front_img_data_3", "emirates_id_back": b"back_img_data_3",
+            "passport_img": b"passport_img_data_3", "salary": 90000.0
+        }
+        add_staff(staff_data)
+
+        # Check the staff member was added
+        staff_list = get_all_staff()
+        self.assertEqual(len(staff_list), 1)
+        staff_id = staff_list[0]["id"]
+
+        # Delete the staff member
+        delete_staff(staff_id)
+
+        # Check the staff member was deleted
+        staff_list = get_all_staff()
+        self.assertEqual(len(staff_list), 0)
