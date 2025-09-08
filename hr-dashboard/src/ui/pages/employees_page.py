@@ -94,11 +94,25 @@ class EmployeesPage(QWidget):
             9: "passport_img"
         }
         if column in image_columns:
-            staff = self.staff_data[row]
-            image_data = staff.get(image_columns[column])
-            if image_data:
-                dialog = ImagePreviewDialog(image_data, self)
-                dialog.exec()
+            # Check if the row index is valid
+            if 0 <= row < len(self.staff_data):
+                staff = self.staff_data[row]
+                image_source = staff.get(image_columns[column])
+
+                # Determine the image data to pass to the dialog
+                image_data_for_dialog = None
+                if isinstance(image_source, str): # It's a path
+                    try:
+                        with open(image_source, 'rb') as f:
+                            image_data_for_dialog = f.read()
+                    except FileNotFoundError:
+                        pass # Image path is invalid, do nothing
+                elif isinstance(image_source, bytes): # It's already bytes
+                    image_data_for_dialog = image_source
+
+                if image_data_for_dialog:
+                    dialog = ImagePreviewDialog(image_data_for_dialog, self)
+                    dialog.exec()
 
     def export_csv(self):
         import csv
@@ -208,26 +222,26 @@ class EmployeesPage(QWidget):
             self.table.setItem(row_idx, 5, QTableWidgetItem(f"$ {staff['salary']}"))
             self.table.setItem(row_idx, 6, QTableWidgetItem(staff.get("position", "") or staff.get("job", "")))
 
-            eid_front_label = QLabel()
-            if staff["emirates_id_front"]:
-                pixmap = QPixmap()
-                pixmap.loadFromData(staff["emirates_id_front"])
-                eid_front_label.setPixmap(pixmap.scaled(THUMB_SIZE, THUMB_SIZE, Qt.AspectRatioMode.KeepAspectRatio))
-            self.table.setCellWidget(row_idx, 7, eid_front_label)
+            # --- Start of new image loading logic ---
+            def create_image_label(image_source):
+                label = QLabel()
+                if not image_source:
+                    return label
 
-            eid_back_label = QLabel()
-            if staff["emirates_id_back"]:
                 pixmap = QPixmap()
-                pixmap.loadFromData(staff["emirates_id_back"])
-                eid_back_label.setPixmap(pixmap.scaled(THUMB_SIZE, THUMB_SIZE, Qt.AspectRatioMode.KeepAspectRatio))
-            self.table.setCellWidget(row_idx, 8, eid_back_label)
+                if isinstance(image_source, str):
+                    pixmap.load(image_source) # Load from path
+                else:
+                    pixmap.loadFromData(image_source) # Load from bytes
 
-            passport_label = QLabel()
-            if staff["passport_img"]:
-                pixmap = QPixmap()
-                pixmap.loadFromData(staff["passport_img"])
-                passport_label.setPixmap(pixmap.scaled(THUMB_SIZE, THUMB_SIZE, Qt.AspectRatioMode.KeepAspectRatio))
-            self.table.setCellWidget(row_idx, 9, passport_label)
+                if not pixmap.isNull():
+                    label.setPixmap(pixmap.scaled(THUMB_SIZE, THUMB_SIZE, Qt.AspectRatioMode.KeepAspectRatio))
+                return label
+
+            self.table.setCellWidget(row_idx, 7, create_image_label(staff.get("emirates_id_front")))
+            self.table.setCellWidget(row_idx, 8, create_image_label(staff.get("emirates_id_back")))
+            self.table.setCellWidget(row_idx, 9, create_image_label(staff.get("passport_img")))
+            # --- End of new image loading logic ---
 
             actions_widget = QWidget()
             actions_layout = QHBoxLayout(actions_widget)
@@ -246,7 +260,7 @@ class EmployeesPage(QWidget):
                 from services.staff_service import update_staff
                 dlg = EmployeeDialog(data=staff, save_callback=lambda d: self._edit_callback(staff["id"], d))
                 dlg.exec()
-            def delete_row(staff):
+            def delete__row(staff):
                 from services.staff_service import delete_staff
                 reply = QMessageBox.question(self, translator.tr("Delete Employee"), translator.tr("Delete {first} {last}?", first=staff['first_name'], last=staff['last_name']), QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
                 if reply == QMessageBox.StandardButton.Yes:
