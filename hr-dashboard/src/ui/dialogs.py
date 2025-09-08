@@ -1,4 +1,5 @@
-from PyQt6.QtWidgets import QDialog, QFormLayout, QLineEdit, QPushButton, QDateEdit, QVBoxLayout, QMessageBox, QFileDialog, QDoubleSpinBox
+import os
+from PyQt6.QtWidgets import QDialog, QFormLayout, QLineEdit, QPushButton, QDateEdit, QVBoxLayout, QMessageBox, QFileDialog, QDoubleSpinBox, QLabel
 from PyQt6.QtCore import QDate
 from ui.animations import fade_in_widget
 
@@ -84,6 +85,12 @@ class EmployeeDialog(QDialog):
                 self.btn_passport.setText(path.split("/")[-1])
 
     def get_data(self):
+        def read_image_data(path_or_data):
+            if path_or_data and isinstance(path_or_data, str) and os.path.exists(path_or_data):
+                with open(path_or_data, 'rb') as f:
+                    return f.read()
+            return path_or_data
+
         return {
             "first_name": self.first_name.text().strip(),
             "last_name": self.last_name.text().strip(),
@@ -92,9 +99,9 @@ class EmployeeDialog(QDialog):
             "emirates_id": self.emirates_id.text().strip(),
             "passport_number": self.passport_number.text().strip(),
             "salary": self.salary.value(),
-            "emirates_id_front": self.emirates_id_front_path,
-            "emirates_id_back": self.emirates_id_back_path,
-            "passport_img": self.passport_img_path
+            "emirates_id_front": read_image_data(self.emirates_id_front_path),
+            "emirates_id_back": read_image_data(self.emirates_id_back_path),
+            "passport_img": read_image_data(self.passport_img_path)
         }
 
     def save_employee(self):
