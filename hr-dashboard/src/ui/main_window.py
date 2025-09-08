@@ -14,11 +14,21 @@ class HRDashboardWindow(QMainWindow):
         self.resize(1200, 800)
 
         # Pages
+        from ui.pages.settings_page import SettingsPage
+
         self.pages = {
             "Dashboard": DashboardPage(),
             "Employees": EmployeesPage(),
-            "Analytics": AnalyticsPage()
+            "Analytics": AnalyticsPage(),
+            "Settings": SettingsPage()
         }
+
+        # Connect staff_changed signal to refresh dashboard and analytics
+        employees_page = self.pages["Employees"]
+        dashboard_page = self.pages["Dashboard"]
+        analytics_page = self.pages["Analytics"]
+        employees_page.staff_changed.connect(dashboard_page.plot_chart)
+        employees_page.staff_changed.connect(analytics_page.update_kpis)
 
         self.stack = QStackedWidget()
         for page in self.pages.values():
@@ -29,7 +39,8 @@ class HRDashboardWindow(QMainWindow):
         sidebar_icons = {
             "Dashboard": "assets/icons/dashboard.png",
             "Employees": "assets/icons/employees.png",
-            "Analytics": "assets/icons/analytics.png"
+            "Analytics": "assets/icons/analytics.png",
+            "Settings": "assets/icons/settings.png"
         }
         self.sidebar_widget = Sidebar(self, pages=sidebar_icons)
 
@@ -41,6 +52,12 @@ class HRDashboardWindow(QMainWindow):
         self.addDockWidget(Qt.DockWidgetArea.LeftDockWidgetArea, self.sidebar)
 
     def set_page(self, page_name):
+        from ui.animations_extra import slide_in_widget
         page = self.pages.get(page_name)
         if page:
-            self.stack.setCurrentWidget(page)
+            current = self.stack.currentWidget()
+            if current is not page:
+                # Set geometry for animation
+                page.setGeometry(self.stack.geometry())
+                self.stack.setCurrentWidget(page)
+                slide_in_widget(page, direction="right", duration=400)

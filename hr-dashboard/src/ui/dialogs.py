@@ -1,11 +1,13 @@
 from PyQt6.QtWidgets import QDialog, QFormLayout, QLineEdit, QPushButton, QDateEdit, QVBoxLayout, QMessageBox, QFileDialog, QDoubleSpinBox
 from PyQt6.QtCore import QDate
+from ui.animations import fade_in_widget
 
 class EmployeeDialog(QDialog):
     def __init__(self, parent=None, data=None, save_callback=None):
         super().__init__(parent)
         self.setWindowTitle("Add / Edit Employee")
         self.resize(400, 400)
+        self.setWindowOpacity(0)
 
         self.save_callback = save_callback
 
@@ -15,6 +17,7 @@ class EmployeeDialog(QDialog):
 
         self.first_name = QLineEdit()
         self.last_name = QLineEdit()
+        self.position = QLineEdit()
         self.dob = QDateEdit()
         self.dob.setCalendarPopup(True)
         self.dob.setDate(QDate.currentDate())
@@ -40,6 +43,7 @@ class EmployeeDialog(QDialog):
 
         form.addRow("First Name", self.first_name)
         form.addRow("Last Name", self.last_name)
+        form.addRow("Position", self.position)
         form.addRow("Date of Birth", self.dob)
         form.addRow("Emirates ID", self.emirates_id)
         form.addRow("Passport Number", self.passport_number)
@@ -55,6 +59,7 @@ class EmployeeDialog(QDialog):
         if data:
             self.first_name.setText(data.get("first_name",""))
             self.last_name.setText(data.get("last_name",""))
+            self.position.setText(data.get("position", ""))
             self.dob.setDate(QDate.fromString(data.get("dob","2000-01-01"), "yyyy-MM-dd"))
             self.emirates_id.setText(data.get("emirates_id",""))
             self.passport_number.setText(data.get("passport_number",""))
@@ -62,6 +67,8 @@ class EmployeeDialog(QDialog):
             self.emirates_id_front_path = data.get("emirates_id_front","")
             self.emirates_id_back_path = data.get("emirates_id_back","")
             self.passport_img_path = data.get("passport_img","")
+        # Fade in animation
+        fade_in_widget(self)
 
     def select_file(self, field):
         path, _ = QFileDialog.getOpenFileName(self, "Select Image", "", "Images (*.png *.jpg *.jpeg)")
@@ -80,6 +87,7 @@ class EmployeeDialog(QDialog):
         return {
             "first_name": self.first_name.text().strip(),
             "last_name": self.last_name.text().strip(),
+            "position": self.position.text().strip(),
             "dob": self.dob.date().toString("yyyy-MM-dd"),
             "emirates_id": self.emirates_id.text().strip(),
             "passport_number": self.passport_number.text().strip(),
