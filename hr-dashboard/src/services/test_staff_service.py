@@ -20,7 +20,8 @@ class TestStaffService(unittest.TestCase):
                 first_name TEXT, last_name TEXT, dob TEXT,
                 emirates_id TEXT, passport_number TEXT,
                 emirates_id_front BLOB, emirates_id_back BLOB, passport_img BLOB,
-                salary REAL
+                salary REAL,
+                position TEXT
             )
         """)
 
@@ -44,13 +45,14 @@ class TestStaffService(unittest.TestCase):
             "first_name": "John", "last_name": "Doe", "dob": "1990-01-01",
             "emirates_id": "12345", "passport_number": "A12345678",
             "emirates_id_front": b"front_img_data", "emirates_id_back": b"back_img_data",
-            "passport_img": b"passport_img_data", "salary": 60000.0
+            "passport_img": b"passport_img_data", "salary": 60000.0, "position": "Developer"
         }
         add_staff(staff_data)
 
         staff_list = get_all_staff()
         self.assertEqual(len(staff_list), 1)
         self.assertEqual(staff_list[0]["salary"], 60000.0)
+        self.assertEqual(staff_list[0]["position"], "Developer")
 
     @patch('services.staff_service.get_connection')
     def test_update_staff_with_salary(self, mock_get_connection):
@@ -62,20 +64,22 @@ class TestStaffService(unittest.TestCase):
             "first_name": "Jane", "last_name": "Doe", "dob": "1992-02-02",
             "emirates_id": "67890", "passport_number": "B67890",
             "emirates_id_front": b"front_img_data_2", "emirates_id_back": b"back_img_data_2",
-            "passport_img": b"passport_img_data_2", "salary": 70000.0
+            "passport_img": b"passport_img_data_2", "salary": 70000.0, "position": "Manager"
         }
         add_staff(staff_data)
 
         staff_list = get_all_staff()
         staff_id = staff_list[0]["id"]
 
-        # Update the salary
+        # Update the salary and position
         updated_data = staff_data.copy()
         updated_data["salary"] = 80000.0
+        updated_data["position"] = "Senior Manager"
         update_staff(staff_id, updated_data)
 
         updated_staff_list = get_all_staff()
         self.assertEqual(updated_staff_list[0]["salary"], 80000.0)
+        self.assertEqual(updated_staff_list[0]["position"], "Senior Manager")
 
     @patch('services.staff_service.get_connection')
     def test_delete_staff(self, mock_get_connection):
@@ -87,7 +91,7 @@ class TestStaffService(unittest.TestCase):
             "first_name": "Peter", "last_name": "Jones", "dob": "1985-05-05",
             "emirates_id": "11223", "passport_number": "C112233",
             "emirates_id_front": b"front_img_data_3", "emirates_id_back": b"back_img_data_3",
-            "passport_img": b"passport_img_data_3", "salary": 90000.0
+            "passport_img": b"passport_img_data_3", "salary": 90000.0, "position": "Accountant"
         }
         add_staff(staff_data)
 
@@ -102,3 +106,27 @@ class TestStaffService(unittest.TestCase):
         # Check the staff member was deleted
         staff_list = get_all_staff()
         self.assertEqual(len(staff_list), 0)
+
+    @patch('services.staff_service.get_connection')
+    def test_get_all_staff_returns_dicts(self, mock_get_connection):
+        """Test that get_all_staff returns a list of dictionaries with correct keys."""
+        mock_get_connection.side_effect = self.get_new_connection
+
+        staff_data = {
+            "first_name": "Test", "last_name": "User", "dob": "2000-01-01",
+            "emirates_id": "98765", "passport_number": "D98765",
+            "emirates_id_front": b"front", "emirates_id_back": b"back",
+            "passport_img": b"pass", "salary": 50000.0, "position": "Tester"
+        }
+        add_staff(staff_data)
+
+        staff_list = get_all_staff()
+        self.assertIsInstance(staff_list, list)
+        self.assertIsInstance(staff_list[0], dict)
+
+        expected_keys = [
+            "id", "first_name", "last_name", "dob", "emirates_id",
+            "passport_number", "emirates_id_front", "emirates_id_back",
+            "passport_img", "salary", "position"
+        ]
+        self.assertCountEqual(staff_list[0].keys(), expected_keys)

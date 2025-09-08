@@ -20,7 +20,8 @@ def get_all_staff():
     conn = get_connection()
     c = conn.cursor()
     c.execute("SELECT * FROM staff")
-    rows = [dict(row) for row in c.fetchall()]
+    columns = [description[0] for description in c.description]
+    rows = [dict(zip(columns, row)) for row in c.fetchall()]
     conn.close()
     return rows
 

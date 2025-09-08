@@ -4,7 +4,6 @@ from PyQt6.QtWidgets import (
 from PyQt6.QtCore import Qt
 from ui.pages.dashboard_page import DashboardPage
 from ui.pages.employees_page import EmployeesPage
-from ui.pages.analytics_page import AnalyticsPage
 from ui.sidebar import Sidebar
 
 class HRDashboardWindow(QMainWindow):
@@ -19,16 +18,13 @@ class HRDashboardWindow(QMainWindow):
         self.pages = {
             "Dashboard": DashboardPage(),
             "Employees": EmployeesPage(),
-            "Analytics": AnalyticsPage(),
             "Settings": SettingsPage()
         }
 
-        # Connect staff_changed signal to refresh dashboard and analytics
+        # Connect staff_changed signal to refresh dashboard
         employees_page = self.pages["Employees"]
         dashboard_page = self.pages["Dashboard"]
-        analytics_page = self.pages["Analytics"]
-        employees_page.staff_changed.connect(dashboard_page.plot_chart)
-        employees_page.staff_changed.connect(analytics_page.update_kpis)
+        employees_page.staff_changed.connect(dashboard_page.refresh_dashboard)
 
         self.stack = QStackedWidget()
         for page in self.pages.values():
@@ -39,7 +35,6 @@ class HRDashboardWindow(QMainWindow):
         sidebar_icons = {
             "Dashboard": "assets/icons/dashboard.png",
             "Employees": "assets/icons/employees.png",
-            "Analytics": "assets/icons/analytics.png",
             "Settings": "assets/icons/settings.png"
         }
         self.sidebar_widget = Sidebar(self, pages=sidebar_icons)

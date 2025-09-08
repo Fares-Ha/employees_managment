@@ -105,3 +105,30 @@ class EmployeeDialog(QDialog):
         if self.save_callback:
             self.save_callback(data)
         self.accept()
+
+from PyQt6.QtGui import QPixmap
+
+class ImagePreviewDialog(QDialog):
+    def __init__(self, image_data, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle("Image Preview")
+        self.image_data = image_data
+
+        layout = QVBoxLayout()
+        self.setLayout(layout)
+
+        self.image_label = QLabel()
+        pixmap = QPixmap()
+        pixmap.loadFromData(self.image_data)
+        self.image_label.setPixmap(pixmap)
+        layout.addWidget(self.image_label)
+
+        self.download_button = QPushButton("Download")
+        self.download_button.clicked.connect(self.download_image)
+        layout.addWidget(self.download_button)
+
+    def download_image(self):
+        file_path, _ = QFileDialog.getSaveFileName(self, "Save Image", "", "PNG Images (*.png);;JPEG Images (*.jpg)")
+        if file_path:
+            with open(file_path, 'wb') as f:
+                f.write(self.image_data)

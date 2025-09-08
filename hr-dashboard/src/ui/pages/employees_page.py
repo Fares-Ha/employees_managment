@@ -2,6 +2,7 @@ from PyQt6.QtWidgets import QWidget, QVBoxLayout, QTableWidget, QTableWidgetItem
 from PyQt6.QtGui import QPixmap
 from PyQt6.QtCore import Qt, pyqtSignal
 from ui.dialogs import EmployeeDialog
+from ui.dialogs import ImagePreviewDialog
 from services.staff_service import get_all_staff, add_staff
 from core.translations import translator
 from ui.toast import Toast
@@ -10,25 +11,12 @@ THUMB_SIZE = 50
 
 class EmployeesPage(QWidget):
     staff_changed = pyqtSignal()
-    def export_csv(self):
-        import csv
-        from services.staff_service import get_all_staff
-        from PyQt6.QtWidgets import QFileDialog, QMessageBox
-        file, _ = QFileDialog.getSaveFileName(self, "Export Employees to CSV", "employees.csv", "CSV Files (*.csv)")
-        if file:
-            staff = get_all_staff()
-            if not staff:
-                QMessageBox.warning(self, "No Data", "No employees to export.")
-                return
-            with open(file, 'w', newline='', encoding='utf-8') as f:
-                writer = csv.DictWriter(f, fieldnames=list(staff[0].keys()))
-                writer.writeheader()
-                writer.writerows(staff)
-            Toast(f"Exported {len(staff)} employees to {file}", self).show()
+
     def __init__(self):
         super().__init__()
         from PyQt6.QtWidgets import QHBoxLayout, QLineEdit, QComboBox, QLabel, QPushButton
         self.layout = QVBoxLayout(self)
+        self.staff_data = []
 
         # Search, filter, and export/import bar
         search_filter_layout = QHBoxLayout()
@@ -85,9 +73,8 @@ class EmployeesPage(QWidget):
             "Salary","Position","EID Front","EID Back","Passport Image"
         ])
         self.table.setSortingEnabled(True)
-    # Styling is now handled by global QSS only
+        self.table.cellClicked.connect(self.on_cell_clicked)
         self.layout.addWidget(self.table)
-
 
         # Add Employee button at page level (top)
         from ui.pages.employees_page import EmployeeDialogButton
@@ -99,6 +86,35 @@ class EmployeesPage(QWidget):
         self.layout.addLayout(search_filter_layout)
 
         translator.language_changed.connect(self.update_translations)
+
+    def on_cell_clicked(self, row, column):
+        image_columns = {
+            7: "emirates_id_front",
+            8: "emirates_id_back",
+            9: "passport_img"
+        }
+        if column in image_columns:
+            staff = self.staff_data[row]
+            image_data = staff.get(image_columns[column])
+            if image_data:
+                dialog = ImagePreviewDialog(image_data, self)
+                dialog.exec()
+
+    def export_csv(self):
+        import csv
+        from services.staff_service import get_all_staff
+        from PyQt6.QtWidgets import QFileDialog, QMessageBox
+        file, _ = QFileDialog.getSaveFileName(self, "Export Employees to CSV", "employees.csv", "CSV Files (*.csv)")
+        if file:
+            staff = get_all_staff()
+            if not staff:
+                QMessageBox.warning(self, "No Data", "No employees to export.")
+                return
+            with open(file, 'w', newline='', encoding='utf-8') as f:
+                writer = csv.DictWriter(f, fieldnames=list(staff[0].keys()))
+                writer.writeheader()
+                writer.writerows(staff)
+            Toast(f"Exported {len(staff)} employees to {file}", self).show()
 
     def update_translations(self):
         self.search_label.setText(translator.tr("Search"))
@@ -112,9 +128,6 @@ class EmployeesPage(QWidget):
         self.export_btn.setText(translator.tr("Export CSV"))
         self.import_btn.setText(translator.tr("Import CSV"))
 
-
-
-        
         self.table.setColumnCount(10)
         self.table.setHorizontalHeaderLabels([
             "First Name","Last Name","DOB","Emirates ID","Passport #",
@@ -122,8 +135,6 @@ class EmployeesPage(QWidget):
         ])
         self.table.setSortingEnabled(True)
         self.layout.addWidget(self.table)
-
-    # (Do not recreate Add Employee button here)
 
         self.load_data()
 
@@ -133,7 +144,6 @@ class EmployeesPage(QWidget):
         from PyQt6.QtWidgets import QFileDialog, QMessageBox
         file, _ = QFileDialog.getOpenFileName(self, "Import Employees from CSV", "", "CSV Files (*.csv)")
         if file:
-            # Confirm overwrite
             reply = QMessageBox.question(self, "Import Employees", "Importing will add to existing employees. Continue?", QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
             if reply != QMessageBox.StandardButton.Yes:
                 return
@@ -141,14 +151,12 @@ class EmployeesPage(QWidget):
                 reader = csv.DictReader(f)
                 count = 0
                 for row in reader:
-                    # Remove id if present
                     row.pop('id', None)
                     add_staff(row)
                     count += 1
             Toast(f"Imported {count} employees from {file}", self).show()
             self.load_data()
             self.staff_changed.emit()
-
 
     def load_data(self):
         self.table.setRowCount(0)
@@ -157,13 +165,12 @@ class EmployeesPage(QWidget):
         salary_to = self.salary_to.text().strip()
         dob_from = self.dob_from.text().strip()
         dob_to = self.dob_to.text().strip()
-        filtered = []
+
+        self.staff_data = []
         for staff in get_all_staff():
-            # Search
             if search_text:
                 if not any(search_text in str(staff.get(field, "")).lower() for field in ["first_name","last_name","emirates_id","passport_number"]):
                     continue
-            # Salary filter
             salary = float(staff.get("salary", 0))
             if salary_from:
                 try:
@@ -177,13 +184,13 @@ class EmployeesPage(QWidget):
                         continue
                 except ValueError:
                     pass
-            # DOB filter
             dob = staff.get("dob", "")
             if dob_from and dob < dob_from:
                 continue
             if dob_to and dob > dob_to:
                 continue
-            filtered.append(staff)
+            self.staff_data.append(staff)
+
         from PyQt6.QtWidgets import QHBoxLayout, QPushButton, QWidget, QMessageBox
         from core.translations import translator
         self.table.setColumnCount(11)
@@ -191,7 +198,7 @@ class EmployeesPage(QWidget):
             translator.tr("First Name"), translator.tr("Last Name"), translator.tr("DOB"), translator.tr("Emirates ID"), translator.tr("Passport Number"),
             translator.tr("Salary"), translator.tr("Position"), translator.tr("EID Front"), translator.tr("EID Back"), translator.tr("Passport Image"), translator.tr("Actions")
         ])
-        for row_idx, staff in enumerate(filtered):
+        for row_idx, staff in enumerate(self.staff_data):
             self.table.insertRow(row_idx)
             self.table.setItem(row_idx, 0, QTableWidgetItem(staff["first_name"]))
             self.table.setItem(row_idx, 1, QTableWidgetItem(staff["last_name"]))
@@ -201,28 +208,27 @@ class EmployeesPage(QWidget):
             self.table.setItem(row_idx, 5, QTableWidgetItem(f"$ {staff['salary']}"))
             self.table.setItem(row_idx, 6, QTableWidgetItem(staff.get("position", "") or staff.get("job", "")))
 
-            # EID Front thumbnail
             eid_front_label = QLabel()
             if staff["emirates_id_front"]:
-                pixmap = QPixmap(staff["emirates_id_front"]).scaled(THUMB_SIZE, THUMB_SIZE, Qt.AspectRatioMode.KeepAspectRatio)
-                eid_front_label.setPixmap(pixmap)
+                pixmap = QPixmap()
+                pixmap.loadFromData(staff["emirates_id_front"])
+                eid_front_label.setPixmap(pixmap.scaled(THUMB_SIZE, THUMB_SIZE, Qt.AspectRatioMode.KeepAspectRatio))
             self.table.setCellWidget(row_idx, 7, eid_front_label)
 
-            # EID Back thumbnail
             eid_back_label = QLabel()
             if staff["emirates_id_back"]:
-                pixmap = QPixmap(staff["emirates_id_back"]).scaled(THUMB_SIZE, THUMB_SIZE, Qt.AspectRatioMode.KeepAspectRatio)
-                eid_back_label.setPixmap(pixmap)
+                pixmap = QPixmap()
+                pixmap.loadFromData(staff["emirates_id_back"])
+                eid_back_label.setPixmap(pixmap.scaled(THUMB_SIZE, THUMB_SIZE, Qt.AspectRatioMode.KeepAspectRatio))
             self.table.setCellWidget(row_idx, 8, eid_back_label)
 
-            # Passport thumbnail
             passport_label = QLabel()
             if staff["passport_img"]:
-                pixmap = QPixmap(staff["passport_img"]).scaled(THUMB_SIZE, THUMB_SIZE, Qt.AspectRatioMode.KeepAspectRatio)
-                passport_label.setPixmap(pixmap)
+                pixmap = QPixmap()
+                pixmap.loadFromData(staff["passport_img"])
+                passport_label.setPixmap(pixmap.scaled(THUMB_SIZE, THUMB_SIZE, Qt.AspectRatioMode.KeepAspectRatio))
             self.table.setCellWidget(row_idx, 9, passport_label)
 
-            # Actions (Edit/Delete)
             actions_widget = QWidget()
             actions_layout = QHBoxLayout(actions_widget)
             actions_layout.setContentsMargins(0,0,0,0)
