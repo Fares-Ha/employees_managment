@@ -4,6 +4,7 @@ from matplotlib.figure import Figure
 from services.staff_service import get_all_staff
 from widgets.kpi_box import KpiBox
 import os
+from utils.resource_path import resource_path
 
 class DashboardPage(QWidget):
     def __init__(self):
@@ -13,10 +14,10 @@ class DashboardPage(QWidget):
 
         # KPI Boxes
         self.kpi_layout = QHBoxLayout()
-        self.total_staff_box = KpiBox("Total Staff", 0, os.path.join(os.path.dirname(__file__), "..", "..", "assets", "icons", "users.svg"))
-        self.min_salary_box = KpiBox("Minimum Salary", 0, os.path.join(os.path.dirname(__file__), "..", "..", "assets", "icons", "trending-down.svg"))
-        self.max_salary_box = KpiBox("Maximum Salary", 0, os.path.join(os.path.dirname(__file__), "..", "..", "assets", "icons", "trending-up.svg"))
-        self.avg_salary_box = KpiBox("Average Salary", 0, os.path.join(os.path.dirname(__file__), "..", "..", "assets", "icons", "dollar-sign.svg"))
+        self.total_staff_box = KpiBox("Total Staff", 0, resource_path("assets/icons/users.svg"))
+        self.min_salary_box = KpiBox("Minimum Salary", 0, resource_path("assets/icons/trending-down.svg"))
+        self.max_salary_box = KpiBox("Maximum Salary", 0, resource_path("assets/icons/trending-up.svg"))
+        self.avg_salary_box = KpiBox("Average Salary", 0, resource_path("assets/icons/dollar-sign.svg"))
         self.kpi_layout.addWidget(self.total_staff_box)
         self.kpi_layout.addWidget(self.min_salary_box)
         self.kpi_layout.addWidget(self.max_salary_box)

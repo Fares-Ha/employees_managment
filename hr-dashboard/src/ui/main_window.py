@@ -7,6 +7,7 @@ from ui.pages.employees_page import EmployeesPage
 from ui.sidebar import Sidebar
 from ui.animations import fade_in_widget
 import os
+from utils.resource_path import resource_path
 
 class HRDashboardWindow(QMainWindow):
     def __init__(self):
@@ -36,9 +37,9 @@ class HRDashboardWindow(QMainWindow):
         self.setCentralWidget(self.stack)
 
         # Sidebar
-        sidebar_icons = {"Dashboard": os.path.join(os.path.dirname(__file__), "..", "assets", "icons", "dollar-sign.svg"),
-                         "Employees": os.path.join(os.path.dirname(__file__), "..", "assets", "icons", "users.svg"),
-                         "Settings": os.path.join(os.path.dirname(__file__), "..", "assets", "icons", "settings.svg")
+        sidebar_icons = {"Dashboard": resource_path("assets/icons/dollar-sign.svg"),
+                         "Employees": resource_path("assets/icons/users.svg"),
+                         "Settings": resource_path("assets/icons/settings.svg")
         }
         self.sidebar_widget = Sidebar(self, pages=sidebar_icons) 
 

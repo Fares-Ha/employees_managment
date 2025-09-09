@@ -5,6 +5,7 @@ from PyQt6.QtSvg import QSvgRenderer
 from PyQt6.QtCore import Qt
 from core.translations import translator
 from services.settings_service import get_settings
+from utils.resource_path import resource_path
 
 class Sidebar(QWidget):
     def __init__(self, parent, pages=None):
@@ -32,7 +33,7 @@ class Sidebar(QWidget):
             btn = QPushButton(f"  {translator.tr(page_name)}")
             btn.setCheckable(True)
             if icon_path:
-                with open(icon_path, 'r') as f:
+                with open(resource_path(icon_path), 'r') as f:
                     self.svg_contents[page_name] = f.read()
             btn.clicked.connect(functools.partial(self.set_active, page_name))
             self.layout.addWidget(btn)
@@ -86,7 +87,7 @@ class Sidebar(QWidget):
             except Exception:
                 logo_path = None
         if not logo_path or not os.path.exists(logo_path):
-            logo_path = os.path.join(os.path.dirname(__file__), '../assets/default_logo.png')
+            logo_path = resource_path('assets/default_logo.png')
             print (logo_path)
         pixmap = QPixmap(logo_path)
         if not pixmap.isNull():
