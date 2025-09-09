@@ -1,7 +1,20 @@
 import sqlite3
 import os
+import sys
 
-DB_PATH = os.path.join(os.path.dirname(__file__), "hr_dashboard.db")
+
+def get_db_path():
+    """Return a writable path for the SQLite database."""
+    if getattr(sys, 'frozen', False):
+        # Running from PyInstaller bundle → use user home directory
+        base_dir = os.path.expanduser("~")
+    else:
+        # Running from source
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+
+    return os.path.join(base_dir, "hr_dashboard.db")
+
+DB_PATH = get_db_path()
 
 def get_connection():
     conn = sqlite3.connect(DB_PATH)

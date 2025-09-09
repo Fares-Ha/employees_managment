@@ -87,6 +87,7 @@ class Sidebar(QWidget):
                 logo_path = None
         if not logo_path or not os.path.exists(logo_path):
             logo_path = os.path.join(os.path.dirname(__file__), '../assets/default_logo.png')
+            print (logo_path)
         pixmap = QPixmap(logo_path)
         if not pixmap.isNull():
             self.logo_label.setPixmap(pixmap.scaledToHeight(64))
