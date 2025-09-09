@@ -1,31 +1,28 @@
-from PyQt6.QtGui import QPalette, QColor
 from PyQt6.QtWidgets import QApplication
+from PyQt6.QtCore import QFile, QTextStream
 
-def set_dark_palette(app: QApplication):
-    app.setStyle("Fusion")
-    pal = QPalette()
-    pal.setColor(QPalette.ColorRole.Window, QColor(30, 32, 35))
-    pal.setColor(QPalette.ColorRole.WindowText, QColor(255, 255, 255))
-    pal.setColor(QPalette.ColorRole.Base, QColor(22, 24, 27))
-    pal.setColor(QPalette.ColorRole.AlternateBase, QColor(40, 43, 48))
-    pal.setColor(QPalette.ColorRole.ToolTipBase, QColor(30, 32, 35))
-    pal.setColor(QPalette.ColorRole.ToolTipText, QColor(255, 255, 255))
-    pal.setColor(QPalette.ColorRole.Text, QColor(255, 255, 255))
-    pal.setColor(QPalette.ColorRole.Button, QColor(40, 43, 48))
-    pal.setColor(QPalette.ColorRole.ButtonText, QColor(255, 255, 255))
-    pal.setColor(QPalette.ColorRole.BrightText, QColor(255, 255, 255))
-    pal.setColor(QPalette.ColorRole.Highlight, QColor(80, 140, 255))
-    pal.setColor(QPalette.ColorRole.HighlightedText, QColor(255, 255, 255))
-    app.setPalette(pal)
+def load_qss(app: QApplication, qss_file_path: str):
+    """Loads a QSS file and applies it to the QApplication."""
+    file = QFile(qss_file_path)
+    if not file.open(QFile.OpenModeFlag.ReadOnly | QFile.OpenModeFlag.Text):
+        print(f"Warning: Could not open QSS file: {qss_file_path}")
+        return
+    
+    stream = QTextStream(file)
+    app.setStyleSheet(stream.readAll())
+    file.close()
 
-def set_light_palette(app: QApplication):
+def set_dark_theme(app: QApplication):
     app.setStyle("Fusion")
-    pal = QPalette()
-    pal.setColor(QPalette.ColorRole.Window, QColor(250, 250, 250))
-    pal.setColor(QPalette.ColorRole.WindowText, QColor(20, 20, 20))
-    pal.setColor(QPalette.ColorRole.Base, QColor(245, 245, 245))
-    pal.setColor(QPalette.ColorRole.Button, QColor(235, 235, 235))
-    pal.setColor(QPalette.ColorRole.ButtonText, QColor(20, 20, 20))
-    pal.setColor(QPalette.ColorRole.Highlight, QColor(30, 120, 240))
-    pal.setColor(QPalette.ColorRole.HighlightedText, QColor(255, 255, 255))
-    app.setPalette(pal)
+    load_qss(app, "D:/New folder/employees_managment/hr-dashboard/src/core/modern_dark.qss")
+
+def set_light_theme(app: QApplication):
+    app.setStyle("Fusion")
+    load_qss(app, "D:/New folder/employees_managment/hr-dashboard/src/core/modern_light.qss")
+
+def get_accent_color_dark():
+    return "#169cf0" # Accent color from modern_dark.qss
+
+def get_accent_color_light():
+    return "#169cf0" # Accent color from modern_light.qss
+

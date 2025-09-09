@@ -1,6 +1,6 @@
 
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QPushButton, QLabel, QFileDialog
-from core.theme import set_dark_palette, set_light_palette
+from core.theme import set_dark_theme, set_light_theme
 from PyQt6.QtWidgets import QApplication
 from core.translations import translator
 
@@ -49,8 +49,8 @@ class SettingsPage(QWidget):
         settings = get_settings()
         theme = settings["theme"] if settings and "theme" in settings.keys() else "dark"
         self.theme_box.setCurrentIndex(1 if theme == "dark" else 0)
-        if theme == "light":
-            set_light_palette(QApplication.instance())
+        # if theme == "light":
+        #     set_light_palette(QApplication.instance())
         # Language preference (default English)
         lang = settings["language"] if settings and "language" in settings.keys() and settings["language"] else "English"
         self.language_box.setCurrentText(lang)
@@ -110,17 +110,15 @@ class SettingsPage(QWidget):
         idx = self.theme_box.currentIndex()
         if idx == 0:
             # Light
-            set_light_palette(app)
-            qss_path = os.path.join(base, "admintory_light_table.qss")
+            set_light_theme(app)
             update_theme("light")
+            
         else:
             # Dark
-            set_dark_palette(app)
-            qss_path = os.path.join(base, "modern_dark.qss")
+            set_dark_theme(app)
             update_theme("dark")
-        if os.path.exists(qss_path):
-            with open(qss_path, "r", encoding="utf-8") as f:
-                app.setStyleSheet(f.read())
+            
+
 
     def change_logo(self):
         file, _ = QFileDialog.getOpenFileName(self, translator.tr("Select Logo"), "", translator.tr("Images (*.png *.jpg *.bmp)"))

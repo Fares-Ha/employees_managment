@@ -1,0 +1,10 @@
+PS D:\New folder\employees_managment> & "C:/Program Files/Python310/python.exe" "d:/New folder/employees_managment/hr-dashboard/src/main.py"
+Traceback (most recent call last):
+  File "d:\New folder\employees_managment\hr-dashboard\src\main.py", line 21, in <module>
+    win = HRDashboardWindow()
+  File "d:\New folder\employees_managment\hr-dashboard\src\ui\main_window.py", line 18, in __init__
+    from ui.pages.settings_page import SettingsPage
+  File "d:\New folder\employees_managment\hr-dashboard\src\ui\pages\settings_page.py", line 3, in <module>
+    from core.theme import set_dark_palette, set_light_palette
+ImportError: cannot import name 'set_dark_palette' from 'core.theme' (d:\New folder\employees_managment\hr-dashboard\src\core\theme.py)
+PS D:\New folder\employees_managment> , fix this bug

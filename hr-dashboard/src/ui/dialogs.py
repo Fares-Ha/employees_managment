@@ -1,7 +1,7 @@
 import os
 from PyQt6.QtWidgets import QDialog, QFormLayout, QLineEdit, QPushButton, QDateEdit, QVBoxLayout, QMessageBox, QFileDialog, QDoubleSpinBox, QLabel
 from PyQt6.QtCore import QDate
-from ui.animations import fade_in_widget
+from ui.animations import scale_in_widget
 
 class EmployeeDialog(QDialog):
     def __init__(self, parent=None, data=None, save_callback=None):
@@ -69,7 +69,7 @@ class EmployeeDialog(QDialog):
             self.emirates_id_back_path = data.get("emirates_id_back","")
             self.passport_img_path = data.get("passport_img","")
         # Fade in animation
-        fade_in_widget(self)
+        scale_in_widget(self)
 
     def select_file(self, field):
         path, _ = QFileDialog.getOpenFileName(self, "Select Image", "", "Images (*.png *.jpg *.jpeg)")
@@ -133,6 +133,8 @@ class ImagePreviewDialog(QDialog):
         self.download_button = QPushButton("Download")
         self.download_button.clicked.connect(self.download_image)
         layout.addWidget(self.download_button)
+
+        scale_in_widget(self)
 
     def download_image(self):
         file_path, _ = QFileDialog.getSaveFileName(self, "Save Image", "", "PNG Images (*.png);;JPEG Images (*.jpg)")

@@ -260,7 +260,7 @@ class EmployeesPage(QWidget):
                 from services.staff_service import update_staff
                 dlg = EmployeeDialog(data=staff, save_callback=lambda d: self._edit_callback(staff["id"], d))
                 dlg.exec()
-            def delete__row(staff):
+            def delete_row(staff):
                 from services.staff_service import delete_staff
                 reply = QMessageBox.question(self, translator.tr("Delete Employee"), translator.tr("Delete {first} {last}?", first=staff['first_name'], last=staff['last_name']), QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
                 if reply == QMessageBox.StandardButton.Yes:

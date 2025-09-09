@@ -1,0 +1,383 @@
+/*
+ * Modern Light Theme v2 for PyQt6 Applications
+ * Author: Gemini CLI Agent
+ * Version: 2.0
+ *
+ * A refined, modern, and clean light theme with a focus on smooth UX and readability.
+ */
+
+/* --- Color Palette --- */
+/* Backgrounds */
+#define BG_PRIMARY #FFFFFF
+#define BG_SURFACE #F0F2F5
+
+/* Text Colors */
+#define TEXT_PRIMARY #212529
+#define TEXT_SECONDARY #6C757D
+
+/* Accent Colors */
+#define ACCENT_PRIMARY #007BFF
+#define ACCENT_HIGHLIGHT #0056b3
+
+/* Borders & Dividers */
+#define BORDER_COLOR #DEE2E6
+
+/* Status Colors */
+#define STATUS_SUCCESS #28A745
+#define STATUS_WARNING #FFC107
+#define STATUS_ERROR #DC3545
+
+/* --- General Widget Styling --- */
+QWidget {
+    background-color: BG_PRIMARY;
+    color: TEXT_PRIMARY;
+    font-family: "Roboto", "Segoe UI", "Arial", sans-serif;
+    font-size: 14px;
+    border: none;
+}
+
+/* Main Window */
+QMainWindow {
+    background-color: BG_PRIMARY;
+    border: none;
+}
+
+/* --- Push Buttons --- */
+QPushButton {
+    background-color: ACCENT_PRIMARY;
+    color: #ffffff; /* White text on accent */
+    border-radius: 5px;
+    padding: 10px 15px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    outline: none; /* Remove focus outline */
+    border: none;
+}
+
+QPushButton:hover {
+    background-color: ACCENT_HIGHLIGHT;
+}
+
+QPushButton:pressed {
+    background-color: #004085; /* Darker blue for pressed state */
+    padding-top: 11px; /* Subtle press effect */
+    padding-bottom: 9px;
+}
+
+QPushButton:disabled {
+    background-color: BORDER_COLOR;
+    color: TEXT_SECONDARY;
+}
+
+/* --- Input Fields: QLineEdit, QComboBox, QSpinBox, QDateEdit, QPlainTextEdit, QTextEdit --- */
+QLineEdit, QComboBox, QSpinBox, QDateEdit, QPlainTextEdit, QTextEdit {
+    background-color: BG_SURFACE;
+    color: TEXT_PRIMARY;
+    border: 1px solid BORDER_COLOR;
+    border-radius: 5px;
+    padding: 8px 12px;
+    selection-background-color: ACCENT_PRIMARY;
+    selection-color: #ffffff;
+}
+
+QLineEdit:focus, QComboBox:focus, QSpinBox:focus, QDateEdit:focus, QPlainTextEdit:focus, QTextEdit:focus {
+    border: 1px solid ACCENT_PRIMARY;
+    /* Subtle glow effect */
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+/* ComboBox Dropdown */
+QComboBox::drop-down {
+    subcontrol-origin: padding;
+    subcontrol-position: top right;
+    width: 25px;
+    border-left: 1px solid BORDER_COLOR;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+}
+
+QComboBox::down-arrow {
+    /* Placeholder for a modern down arrow icon */
+    image: url(qrc:/icons/arrow_down.svg); /* Assuming a resource file for icons */
+    width: 12px;
+    height: 12px;
+}
+
+/* --- Table View --- */
+QTableView {
+    background-color: BG_SURFACE;
+    color: TEXT_PRIMARY;
+    border: 1px solid BORDER_COLOR;
+    gridline-color: BORDER_COLOR;
+    border-radius: 8px; /* Slightly more rounded for tables */
+    selection-background-color: ACCENT_PRIMARY;
+    selection-color: #ffffff;
+    alternate-background-color: #F8F9FA; /* Slightly different row color */
+}
+
+QHeaderView::section {
+    background-color: BG_PRIMARY;
+    color: ACCENT_PRIMARY;
+    padding: 10px 8px;
+    border: none;
+    border-bottom: 1px solid BORDER_COLOR;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+QHeaderView::section:hover {
+    background-color: #F1F3F5; /* Slightly darker hover for headers */
+}
+
+/* --- Scroll Bars --- */
+QScrollBar:vertical, QScrollBar:horizontal {
+    border: none;
+    background: BG_PRIMARY;
+    width: 12px;
+    margin: 0;
+}
+
+QScrollBar::handle:vertical, QScrollBar::handle:horizontal {
+    background: ACCENT_PRIMARY;
+    min-height: 25px;
+    border-radius: 6px;
+}
+
+QScrollBar::handle:vertical:hover, QScrollBar::handle:horizontal:hover {
+    background: ACCENT_HIGHLIGHT;
+}
+
+QScrollBar::add-line, QScrollBar::sub-line {
+    height: 0;
+    width: 0;
+    subcontrol-position: top;
+    subcontrol-origin: margin;
+}
+
+/* --- Dialogs --- */
+QDialog {
+    background-color: BG_PRIMARY;
+    border: 1px solid BORDER_COLOR;
+    border-radius: 12px; /* More rounded for dialogs */
+    padding: 15px;
+}
+
+/* --- Labels --- */
+QLabel {
+    color: TEXT_PRIMARY;
+    background: transparent;
+}
+
+/* --- Tooltip --- */
+QToolTip {
+    background-color: ACCENT_PRIMARY;
+    color: #ffffff;
+    border: 1px solid ACCENT_PRIMARY;
+    border-radius: 5px;
+    padding: 5px 8px;
+    opacity: 230;
+}
+
+/* --- Sidebar --- */
+#Sidebar {
+    background-color: BG_SURFACE; /* Sidebar slightly different from main background */
+    border-right: 1px solid BORDER_COLOR;
+    border-top-right-radius: 12px; /* Rounded corner for sidebar */
+    border-bottom-right-radius: 12px;
+}
+
+#Sidebar QPushButton {
+    background: transparent;
+    color: TEXT_PRIMARY;
+    border: none;
+    text-align: left;
+    padding: 12px 20px;
+    font-size: 15px;
+    border-radius: 5px; /* Subtle rounding for sidebar buttons */
+    text-transform: none;
+    letter-spacing: 0;
+    margin: 4px 8px; /* Spacing between sidebar items */
+}
+
+#Sidebar QPushButton:hover {
+    background-color: #E9ECEF; /* Lighter hover for sidebar buttons */
+    color: ACCENT_PRIMARY;
+}
+
+#Sidebar QPushButton:checked {
+    background-color: ACCENT_PRIMARY;
+    color: #ffffff;
+    font-weight: 600; /* Bold for selected item */
+}
+
+/* --- Cards or GroupBoxes --- */
+QGroupBox, .card {
+    background-color: BG_SURFACE;
+    border: 1px solid BORDER_COLOR;
+    border-radius: 12px; /* Consistent card rounding */
+    margin-top: 15px;
+    padding: 15px;
+    /* Subtle shadow for elevation */
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+QGroupBox::title {
+    subcontrol-origin: margin;
+    subcontrol-position: top left;
+    padding: 0 10px;
+    color: ACCENT_PRIMARY;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+/* --- Tab Widget --- */
+QTabWidget::pane {
+    border: 1px solid BORDER_COLOR;
+    border-radius: 8px;
+    padding: 10px;
+}
+
+QTabBar::tab {
+    background-color: BG_PRIMARY;
+    color: TEXT_SECONDARY;
+    padding: 10px 20px;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    border: 1px solid BORDER_COLOR;
+    border-bottom: none;
+    margin-right: 2px;
+}
+
+QTabBar::tab:selected {
+    background-color: BG_SURFACE;
+    color: ACCENT_PRIMARY;
+    font-weight: 600;
+}
+
+QTabBar::tab:hover {
+    background-color: #F1F3F5;
+}
+
+/* --- Progress Bar --- */
+QProgressBar {
+    background-color: BG_SURFACE;
+    color: TEXT_PRIMARY;
+    border: 1px solid BORDER_COLOR;
+    border-radius: 5px;
+    text-align: center;
+}
+
+QProgressBar::chunk {
+    background-color: ACCENT_PRIMARY;
+    border-radius: 5px;
+}
+
+/* --- Custom Widgets (e.g., KPI Box, MPL Card) --- */
+/* Assuming these are custom QWidgets or QFrames that can be styled */
+#KpiBox, #MplCard {
+    background-color: BG_SURFACE;
+    border: 1px solid BORDER_COLOR;
+    border-radius: 12px;
+    padding: 15px;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+#KpiBox QLabel {
+    color: TEXT_PRIMARY;
+}
+
+#KpiBox QLabel#Value { /* Assuming a specific ID for the value label */
+    font-size: 24px;
+    font-weight: 700;
+    color: ACCENT_PRIMARY;
+}
+
+#KpiBox QLabel#Title { /* Assuming a specific ID for the title label */
+    font-size: 14px;
+    color: TEXT_SECONDARY;
+    text-transform: uppercase;
+}
+
+/* --- Other common elements --- */
+QCheckBox::indicator {
+    width: 16px;
+    height: 16px;
+    border-radius: 3px;
+    border: 1px solid BORDER_COLOR;
+    background-color: BG_SURFACE;
+}
+
+QCheckBox::indicator:checked {
+    background-color: ACCENT_PRIMARY;
+    border: 1px solid ACCENT_PRIMARY;
+    image: url(qrc:/icons/check.svg); /* Placeholder for checkmark icon */
+}
+
+QRadioButton::indicator {
+    width: 16px;
+    height: 16px;
+    border-radius: 8px; /* Circular */
+    border: 1px solid BORDER_COLOR;
+    background-color: BG_SURFACE;
+}
+
+QRadioButton::indicator:checked {
+    background-color: ACCENT_PRIMARY;
+    border: 1px solid ACCENT_PRIMARY;
+}
+
+QRadioButton::indicator:checked::after {
+    content: "";
+    display: block;
+    width: 8px;
+    height: 8px;
+    border-radius: 4px;
+    background-color: #ffffff; /* White dot */
+    margin: 3px; /* Center the dot */
+}
+
+QSlider::groove:horizontal {
+    border: 1px solid BORDER_COLOR;
+    height: 8px;
+    background: BG_SURFACE;
+    margin: 2px 0;
+    border-radius: 4px;
+}
+
+QSlider::handle:horizontal {
+    background: ACCENT_PRIMARY;
+    border: 1px solid ACCENT_HIGHLIGHT;
+    width: 18px;
+    height: 18px;
+    margin: -5px 0;
+    border-radius: 9px;
+}
+
+QSlider::add-page:horizontal {
+    background: BORDER_COLOR;
+}
+
+QSlider::sub-page:horizontal {
+    background: ACCENT_PRIMARY;
+}
+
+#KpiBox {
+    background-color: BG_SURFACE;
+    border-radius: 12px;
+    padding: 15px;
+    border: 1px solid BORDER_COLOR;
+}
+
+#KpiBox QLabel#Title {
+    font-size: 14px;
+    font-weight: 500;
+    color: TEXT_SECONDARY;
+    text-transform: uppercase;
+}
+
+#KpiBox QLabel#Value {
+    font-size: 28px;
+    font-weight: 700;
+    color: ACCENT_PRIMARY;
+}

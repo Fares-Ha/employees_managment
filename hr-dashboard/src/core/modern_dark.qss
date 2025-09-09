@@ -96,7 +96,7 @@ QToolTip {
 
 /* Sidebar styles */
 #Sidebar {
-    background-color: #23272f;
+    background-color: #1E2228;
     border-top-right-radius: 18px;
     border-bottom-right-radius: 18px;
 }
@@ -135,3 +135,21 @@ QGroupBox, .card {
 QPushButton:focus {
     outline: none;
 }
+#KpiBox {                                                                                                    │
+    background-color: BG_SURFACE;                                                                            │
+    border-radius: 12px;                                                                                     │
+    padding: 15px;                                                                                           │
+ }                                                                                                            │
+                                                                                                              │        
+#KpiBox QLabel#Title {                                                                                       │        
+    font-size: 14px;                                                                                         │        
+    font-weight: 500;                                                                                        │        
+    color: TEXT_SECONDARY;                                                                                   │        
+    text-transform: uppercase;                                                                               │        
+ }                                                                                                            │        
+                                                                                                              │        
+#KpiBox QLabel#Value {                                                                                       │        
+    font-size: 28px;                                                                                         │        
+    font-weight: 700;                                                                                        │        
+    color: ACCENT_PRIMARY;                                                                                   │        
+ } 

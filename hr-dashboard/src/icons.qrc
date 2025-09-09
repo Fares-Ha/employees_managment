@@ -1,0 +1,8 @@
+<!DOCTYPE RCC><RCC version="1.0">
+    <qresource prefix="/icons">
+        <file>arrow_down.svg</file>
+        <file>arrow_down_dark.svg</file>
+        <file>check.svg</file>
+        <file>check_dark.svg</file>
+    </qresource>
+</RCC>
